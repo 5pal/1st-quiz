@@ -15,12 +15,24 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "suspicious": {
+        "noArrayIndexKey": "off"
+      },
+      "a11y": {
+        "noLabelWithoutControl": "off"
+      },
       "recommended": true
+    },
+    "domains": {
+      "next": "all"
     }
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "double"
+      "quoteStyle": "double",
+      "semicolons": "asNeeded",
+      "trailingCommas": "all",
+      "arrowParentheses": "always"
     }
   },
   "assist": {
