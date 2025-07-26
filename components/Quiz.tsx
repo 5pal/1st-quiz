@@ -32,74 +32,96 @@ const Quiz = () => {
   const questions = [
     {
       id: 1,
-      question: 'Pandas DataFrame에서 결측치가 있는 행을 제거하는 메서드는?',
-      options: ['df.fillna()', 'df.dropna()', 'df.isna()', 'df.notna()'],
+      question:
+        'LangChain의 LCEL(LangChain Expression Language) Runnables에 대한 설명으로 올바른 것은?',
+      options: [
+        'Runnables는 단순히 함수를 실행하는 기능만 제공한다',
+        'pipe() 메서드를 사용하여 여러 Runnable을 체인으로 연결할 수 있다',
+        'Runnables는 동기적으로만 실행되며 비동기 처리를 지원하지 않는다',
+        'invoke() 메서드는 배치 처리에만 사용되고 단일 입력에는 사용할 수 없다',
+      ],
       correct: 1,
       explanation:
-        'df.dropna()는 결측치가 있는 행을 제거하는 메서드입니다. fillna()는 결측치를 채우고, isna()와 notna()는 결측치를 확인하는 메서드입니다.',
+        'LCEL Runnables의 핵심 특징은 pipe() 메서드를 통해 여러 컴포넌트를 체인으로 연결할 수 있다는 것입니다. 또한 invoke(), batch(), stream() 등 다양한 실행 방식을 지원합니다.',
     },
     {
       id: 2,
       question:
-        '머신러닝에서 지도학습 모델의 학습에 사용되는 정답 데이터를 나타내는 용어는?',
-      options: ['Feature', 'Label', 'Input', 'Parameter'],
-      correct: 1,
+        "LangChain의 RecursiveCharacterTextSplitter에서 'chunk_overlap' 매개변수의 역할은 무엇인가요?",
+      options: [
+        '분할된 청크들 간에 겹치는 문자 수를 지정하여 문맥 연속성을 유지한다',
+        '전체 텍스트에서 중복되는 문자들을 제거하는 기능을 수행한다',
+        '청크의 최대 크기를 넘어서는 문자 수를 정의한다',
+        '분할 시 사용할 구분자(separator)의 우선순위를 결정한다',
+      ],
+      correct: 0,
       explanation:
-        'Label(라벨)은 머신러닝에서 지도학습 모델의 학습에 사용되는 정답 데이터를 나타내는 용어입니다. Feature는 입력 특성, Input은 입력값, Parameter는 모델의 매개변수를 의미합니다.',
+        'chunk_overlap은 인접한 청크들 사이에 겹치는 문자 수를 지정합니다. 이를 통해 문맥이 끊어지는 것을 방지하고 정보의 연속성을 유지할 수 있습니다.',
     },
     {
       id: 3,
       question:
-        '[코딩 문제] 다음은 RAG 시스템에서 문서를 chunking하고 embedding 후 vector store를 생성하여 RAG 체인을 완성하는 과정입니다. 빈칸을 채워 완성해주세요.\n\n아래 코드에서 chunking된 텍스트를 embedding하여 vector store를 생성하는 부분의 빈칸을 채워주세요:',
+        '[코딩 문제] 다음 n8n 워크플로우에서 이메일 주소에서 사용자명만 추출하는 표현식을 완성해주세요.',
       options: [],
       correct: -1,
-      explanation:
-        '정답: vectorstore = Chroma.from_documents(chunks, embeddings) 또는 vectorstore = Chroma.from_documents(documents=chunks, embedding=embeddings)',
+      explanation: "정답: email.split('@')[0]",
       type: 'coding',
-      codeTemplate: `from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
-from langchain.chat_models import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
+      codeTemplate: `// n8n 워크플로우: 웹페이지 크롤링 및 데이터 추출
 
-# 1. 문서 chunking
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=200
-)
-chunks = text_splitter.split_documents(documents)
+{
+  "nodes": [
+    {
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://example.com/contact",
+        "requestMethod": "GET"
+      }
+    },
+    {
+      "name": "Extract HTML Data",
+      "type": "n8n-nodes-base.htmlExtract",
+      "parameters": {
+        "extractionValues": {
+          "values": [
+            {
+              "key": "email",
+              "cssSelector": ".contact-email",
+              "returnValue": "text"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Process Email",
+      "type": "n8n-nodes-base.set",
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "username",
+              "value": "={{ $json._______}}"  // 빈칸: 이메일에서 @ 앞부분만 추출
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
 
-# 2. 임베딩 모델 초기화
-embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
-
-# 3. 벡터 저장소 생성 (빈칸을 채워주세요)
-_______ = _________________
-
-# 4. LLM 설정
-openai_api_key = "OPENAI_API_KEY"
-llm = ChatOpenAI(
-    model_name="gpt-3.5-turbo",
-    openai_api_key=openai_api_key,
-    top_p=0.1
-)
-
-# 5. RAG 체인 구성
-retriever = vectorstore.as_retriever()
-template = '''Answer the question based only on the following context:
-{context}
-Question:
-{question}'''
-prompt = ChatPromptTemplate.from_template(template)
-rag_chain = (
-    {'context': retriever | format_docs, 'question': RunnablePassthrough()}
-    | prompt
-    | llm
-    | StrOutputParser()
-)`,
+// 예상 데이터:
+// email: "john.doe@company.com"
+// 
+// 결과:
+// username: "john.doe"`,
+      blanks: [
+        {
+          id: 1,
+          label: '이메일에서 사용자명 추출 ($json 이후 부분)',
+          answer: "email.split('@')[0]",
+        },
+      ],
     },
   ];
 
@@ -112,22 +134,10 @@ rag_chain = (
     let isCorrect = false;
 
     if (currentQ.type === 'coding') {
-      // 코딩 문제 정답 체크
-      const userCode = codeInput.toLowerCase().trim();
-      const correctPatterns = [
-        'vectorstore = chroma.from_documents(chunks, embeddings)',
-        'vectorstore=chroma.from_documents(chunks,embeddings)',
-        'vectorstore = chroma.from_documents(documents=chunks, embedding=embeddings)',
-        'vectorstore = chroma.from_documents(chunks, embedding=embeddings)',
-      ];
-      isCorrect = correctPatterns.some(
-        pattern =>
-          userCode.includes(pattern.toLowerCase()) ||
-          (userCode.includes('vectorstore') &&
-            userCode.includes('chroma.from_documents') &&
-            userCode.includes('chunks') &&
-            userCode.includes('embeddings')),
-      );
+      // 단일 빈칸 정답 체크
+      const userAnswer = codeInput.toLowerCase().trim();
+      const correctAnswer = currentQ.blanks[0].answer.toLowerCase();
+      isCorrect = userAnswer === correctAnswer;
     } else {
       isCorrect = selectedAnswer === currentQ.correct;
     }
@@ -299,18 +309,19 @@ rag_chain = (
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         setCodeInput(e.target.value)
                       }
-                      placeholder="예: vectorstore = Chroma.from_documents(chunks, embeddings)"
+                      placeholder="여기에 코드를 입력하세요..."
                       className="w-full h-24 sm:h-20 p-3 border border-gray-300 rounded-md font-mono text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     />
                   </div>
 
                   <div className="bg-blue-50 p-3 rounded-lg">
-                    <div className="text-xs text-blue-700 mb-1">💡 힌트:</div>
                     <div className="text-xs text-blue-600">
-                      chunking된 텍스트(chunks)와 임베딩 모델(embeddings)을
-                      사용해서 벡터 저장소를 생성하세요.
+                      💡 힌트:{' '}
+                      {questions[currentQuestion].type === 'coding' &&
+                      currentQuestion === 2
+                        ? "이메일 주소를 '@' 기준으로 나누고 첫 번째 부분을 가져오는 JavaScript 메서드를 사용하세요. (예: 문자열.split('구분자')[인덱스])"
+                        : null}
                       <br />
-                      Chroma.from_documents() 메서드를 사용해보세요.
                     </div>
                   </div>
                 </div>
@@ -363,16 +374,7 @@ rag_chain = (
           ) : (
             <div className="text-center space-y-4">
               <div className="flex justify-center">
-                {(
-                  questions[currentQuestion].type === 'coding'
-                    ? codeInput.toLowerCase().includes('vectorstore') &&
-                      codeInput
-                        .toLowerCase()
-                        .includes('chroma.from_documents') &&
-                      codeInput.toLowerCase().includes('chunks') &&
-                      codeInput.toLowerCase().includes('embeddings')
-                    : selectedAnswer === questions[currentQuestion].correct
-                ) ? (
+                {answers[answers.length - 1]?.correct ? (
                   <CheckCircle className="h-12 w-12 sm:h-16 sm:w-16 text-green-500 animate-pulse" />
                 ) : (
                   <XCircle className="h-12 w-12 sm:h-16 sm:w-16 text-red-500 animate-pulse" />
@@ -382,30 +384,12 @@ rag_chain = (
               <div className="space-y-2">
                 <h3
                   className={`text-xl sm:text-2xl font-bold ${
-                    (
-                      questions[currentQuestion].type === 'coding'
-                        ? codeInput.toLowerCase().includes('vectorstore') &&
-                          codeInput
-                            .toLowerCase()
-                            .includes('chroma.from_documents') &&
-                          codeInput.toLowerCase().includes('chunks') &&
-                          codeInput.toLowerCase().includes('embeddings')
-                        : selectedAnswer === questions[currentQuestion].correct
-                    )
+                    answers[answers.length - 1]?.correct
                       ? 'text-green-600'
                       : 'text-red-600'
                   }`}
                 >
-                  {(
-                    questions[currentQuestion].type === 'coding'
-                      ? codeInput.toLowerCase().includes('vectorstore') &&
-                        codeInput
-                          .toLowerCase()
-                          .includes('chroma.from_documents') &&
-                        codeInput.toLowerCase().includes('chunks') &&
-                        codeInput.toLowerCase().includes('embeddings')
-                      : selectedAnswer === questions[currentQuestion].correct
-                  )
+                  {answers[answers.length - 1]?.correct
                     ? '정답입니다!'
                     : '틀렸습니다!'}
                 </h3>
